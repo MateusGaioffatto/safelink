@@ -1,0 +1,21 @@
+.sobrePrivacidadeDiv {
+    text-align: center;
+
+    position: relative;
+    top: 50px;
+    flex: 1;
+
+    width: 85%;
+    height: 50%;
+
+    margin: 40px 32px;
+
+    background-color: #fff;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+
+    justify-content: center;
+}
+    body.dark-mode .sobrePrivacidadeDiv {
+        background: rgba(55, 55, 72);
+    }

@@ -1,0 +1,177 @@
+<?php
+// REDIRECIONAMENTO FORTE PARA HTTPS - COLOCAR NO TOPO ABSOLUTO
+if (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off') {
+    $redirect_url = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    header('HTTP/1.1 301 Moved Permanently');
+    header('Location: ' . $redirect_url);
+    exit();
+}
+?>
+<?php
+  session_start();
+
+  // Verificar se o usuário está logado
+  if (!isset($_SESSION['logado']) || $_SESSION['logado'] !== true) {
+      // Se não estiver logado, redirecionar para a página de login
+      header('Location: logi.php?message=' . urlencode('Acesso restrito! Faça login.') . '&type=error');
+      exit();
+  }
+
+  require_once 'config.php';
+?>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Resultados: </title>
+    <link rel="icon" href="../SafeLinks_Favicon_Logo.png" type="image/png">
+    <link rel="stylesheet" href="../searchInput_searchButtonsStyle.css">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../navBarStyle.css">
+    <link rel="stylesheet" href="resultadosProdutos.css">
+   <link rel="stylesheet" href="index_php.css">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"> <!-- HOMEPAGE ICONES: GOOGLE FONTS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- HOMEPAGE ICONES: FONT AWESOME -->
+<!-- Adicione este estilo inline para garantir que os filtros sejam exibidos corretamente -->
+<style>
+    .filtrosContainer {
+        display: block !important;
+    }
+</style>
+</head>
+<body style="min-height: auto;">
+
+  <!-- <div id="logoBackgroundDiv">
+    <img src="../SafeLinks_Background_Logo.png" id="logoBackgroundImage">
+  </div> -->
+
+    <!-- NAVBAR: HOMEPAGE -->
+    <nav class="navBarElemento" id="navBarElementoId">
+      <div class="navBarContainer">
+        <div class="navBarLogo" id="navBarLogoId"><a href="index.php"> SafeLinks </a></div>
+          <ul class="navBarLinks" id="navBarLinksId">
+            <li><a href="index.php"><i class="fas fa-home"></i> Início </a></li>
+            
+   
+            <li><a href="dicas.php"><i class="fas fa-lightbulb"></i> Dicas </a></li> <!-- NOVO BOTÃO DICAS -->
+            <li class="user-menu">
+              <button class="user-menu-button">
+                <i class="fas fa-user"></i> <?php echo htmlspecialchars($_SESSION['usuario_nome']); ?> <i class="fas fa-caret-down"></i>
+              </button>
+              <div class="user-dropdown">
+                <a href="perfil.php" id="openProfileModal"><i class="fas fa-user-cog"></i> Meu Perfil</a>
+                <a href="favorito.php"><i class="fas fa-heart"></i> Favoritos</a>
+                <a href="historicos.php"><i class="fas fa-history"></i> Histórico</a>
+              </div>
+            </li>
+            <!-- <li><a href="favorito.php"><i class="fas fa-heart"></i> Favoritos </a></li>
+            <li><a href="historicos.php"><i class="fas fa-history"></i> Historico </a></li> -->
+            <!-- <li><a href="#"><i class="fa fa-bell" id="notificacoesIcone"></i> Notificações </a></li> -->
+            <li><a href="sobre.php"><i class="fa-solid fa-circle-info"></i> Sobre </a></li>
+            <li> 
+              <a href="logout.php" class="sair-link">
+                <i class="fas fa-sign-out-alt"></i> Deslogar
+              </a>
+            </li>
+            <li class="modoEscuroClaroElemento" id="modoEscuroClaroElementoId">
+                <a><i class="fas fa-moon"></i> Modo </a>
+            </li>  
+          </ul>
+          <div class="menuHamburguerElemento" id="menuHamburguerElementoId">
+            <i class="fas fa-bars"></i>
+          </div>
+      </div>
+    </nav>
+
+  <div class="searchInput_searchButtonsDiv" id="searchInput_searchButtonsDivId">
+    <div class="searchInputDiv" id="searchInputDivId">
+      <input type="text" class="searchInput" id="searchInputId" autocomplete="off" placeholder="Pesquise algum produto">
+        <button class="searchButton" id="searchButtonId" aria-label="Search">
+          <i class="material-icons" id="searchButtonIcon">search</i>
+        </button>
+        <button class="voiceSearch" id="voiceSearchId" aria-label="VoiceSearch">
+          <i class="material-icons" id="voiceSearchIcon">mic</i>
+        </button>
+    </div>
+
+      <br>
+      
+      <div class="searchOpcoes"> <!-- HOMEPAGE: BARRA DE PESQUISA, OPÇÕES -->
+        <button class="searchOpcoesButtons" id="limparTexto"> <!-- HOMEPAGE: BARRA DE PESQUISA, OPÇÕES, LIMPAR TEXTO -->
+          <i class="fas fa-eraser"></i> Limpar
+        </button>
+        <button class="searchOpcoesButtons" id="acessarHistorico"> <!-- HOMEPAGE: BARRA DE PESQUISA, OPÇÕES, HISTÓRICO -->
+          <i class="fas fa-history"></i> Histórico
+        </button>
+      </div>
+    </div>
+    
+    <!-- SEÇÃO DE FILTROS - ADICIONADA APÓS A BARRA DE PESQUISA -->
+    <div class="filtrosContainer" id="filtrosContainerID">
+      <div class="filtro-grupo">
+      <h3>Filtros</h3>
+      
+      <!-- Filtro de Lojas -->
+      <div class="filtro-item">
+        <label for="filtroLojas">Lojas:</label>
+        <div class="filtro-lojas-input-container">
+          <input type="text" id="filtroLojasInput" placeholder="Digite o nome da loja" class="filtro-input">
+          <div class="lojas-sugestoes" id="lojasSugestoes"></div>
+        </div>
+      </div>
+      
+      <!-- Filtro de Categorias -->
+      <div class="filtro-item">
+        <label for="filtroCategorias">Categorias:</label>
+        <select id="filtroCategorias" class="filtro-select">
+          <option value="todos">Todos os produtos</option>
+          <option value="eletronicos">Eletrônicos</option>
+          <option value="eletrodomesticos">Eletrodomésticos</option>
+          <option value="informatica">Informática</option>
+          <option value="celulares">Celulares e Tablets</option>
+          <option value="games">Games</option>
+          <option value="livros">Livros</option>
+          <option value="moda">Moda</option>
+          <option value="casa">Casa e Decoração</option>
+          <option value="beleza">Beleza e Saúde</option>
+          <option value="esporte">Esporte e Lazer</option>
+        </select>
+      </div>
+      
+  
+      
+      <!-- Botões de ação -->
+      <div class="filtro-botoes">
+        <button id="aplicarFiltrosBtn" class="filtro-btn aplicar">Aplicar Filtros</button>
+        <button id="limparFiltrosBtn" class="filtro-btn limpar">Limpar Filtros</button>
+      </div>
+
+      </div>
+      
+    </div>
+    
+    <div class="resultadosProdutosDiv" id="resultadosProdutosDivID"> <!-- RESULTADOS PRODUTOS: CATÁLOGO DE PRODUTOS -->
+        <a href="" class="resultadosProdutosA" id="resultadosProdutosAID"> <!-- RESULTADOS PRODUTOS: PRODUTOS, LINKS -->
+            <li class="resultadosProdutosLi" id="genericoLi" style="display: none;"> <!-- RESULTADOS PRODUTOS: PRODUTOS -->
+                <img src="" alt="" class="resultadosProdutosLiImg" id="resultadosProdutosLiImgID"> <!-- RESULTADOS PRODUTOS: PRODUTOS, THUMBNAILS -->
+                <h1 class="liProdutosTitulos" id="genericoH1" style="display: none;"></h1> <!-- RESULTADOS PRODUTOS: PRODUTOS, TÍTULOS -->
+                  <img class="liProdutosIconesImagens" id="genericoIconeImagem" style="display: none;"></img> <!-- RESULTADOS PRODUTOS: PRODUTOS, ÍCONES -->
+                  <p class="liProdutosLojasNomes" id="liProdutosLojasNomesP"></p> <!-- RESULTADOS PRODUTOS: PRODUTOS, NOME DAS LOJAS -->
+                  <h2 class="liProdutosPrecos" id="genericoH2" style="display: none;"></h2> <!-- RESULTADOS PRODUTOS: PRODUTOS, PREÇOS -->
+              </li>
+        </a>
+        <ul class="resultadosProdutosUl" id="resultadosProdutosUlID"> <!-- RESULTADOS PRODUTOS: BARRA DE LOJAS, LISTA DE PRODUTOS -->
+        </ul>
+    </div>
+
+    
+
+    <script src="../script.js"></script>
+    <script src="index_php.js"></script>
+    <script src="resultadosProdutos.js" type="module"></script>
+    <script src="../theme.js"></script>
+    <script src="../campoDePesquisa_URL_Produtos.js"></script>
+</body>
+</html>

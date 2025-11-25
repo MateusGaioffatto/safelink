@@ -1,0 +1,101 @@
+.btn-pesquisar {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+    .btn-pesquisar:hover {
+        opacity: 0.9;
+    }
+        body.dark-mode .btn-pesquisar {
+            background: var(--primary-dark);
+            color: var(--light);
+            border: 1px var(--light) solid;
+        }
+
+
+
+
+
+.historico-container {
+    max-width: 800px;
+    margin: 80px auto 20px;
+    padding: 20px;
+}
+    .historico-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .historico-list {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .historico-item {
+        cursor: pointer;
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 5px;
+        box-shadow: 0px 2px var(--lt-color-border-dark);
+        transition: background 0.3s, box-shadow 0.3s;
+        background: var(--lt-color-background-light);
+        margin: 5px;
+    }
+    .historico-item:last-child {
+        border-bottom: none;
+    }
+    .historico-termo {
+        font-size: 16px;
+        color: #333;
+        text-wrap: balance;
+    }
+    .historico-data {
+        font-size: 12px;
+        max-width: 90%;
+    }
+
+
+
+
+
+.btn-pesquisar {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.empty-state {
+    text-align: center;
+}
+    .empty-state i {
+        color: red;
+        font-size: large;
+    }
+
+
+
+
+
+body.dark-mode .historico-list {
+    color: var(--lt-color-black);
+    background: #2d3748;
+}
+body.dark-mode .historico-item {
+    color: var(--lt-color-black);
+    border-color: #4a5568;
+}
+body.dark-mode .historico-termo {
+    color: var(--lt-color-black);
+    /* color: #e2e8f0; */
+}
